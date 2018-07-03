@@ -50,6 +50,7 @@ if($error) {
 }
 
 
+
     //prepairing varibales for sql 
     
     $username = mysqli_real_escape_string($link,$_POST['username']);
@@ -98,7 +99,6 @@ if($error) {
     
     
     
-
 
 
 ?>
