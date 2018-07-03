@@ -14,7 +14,7 @@ $missingpassword = '<p><strong>Please provide a password graeter than 6 with atl
 $confpassword = '<p><strong>Please confirm the password</strong></p>';
 
 
-//check fields submitted or not
+//check if fields submitted 
 
 if(empty($_POST['username']))
     $error.= $usernameerror;
