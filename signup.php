@@ -1,7 +1,7 @@
 <?php
 session_start();
 
-//connrct to database
+//connect to database
 include "connection.php";
 
 //define error msgs
@@ -19,7 +19,7 @@ $confpassword = '<p><strong>Please confirm the password</strong></p>';
 if(empty($_POST['username']))
     $error.= $usernameerror;
 else
-    $username = filter_var($_POST['username'],FILTER_SNITIZE_STRING);
+    $username = filter_var($_POST['username'],FILTER_SANITIZE_STRING);
     
     
 if(empty($_POST['email']))
@@ -46,33 +46,56 @@ else {
 
 
 if($error) {
-    echo "<div class='alert alert-danger'>".$error."</div>";
+    echo "<div class='alert alert-danger'>".$error."</div>";exit;
 }
-elseif(!$error){
+
+
     //prepairing varibales for sql 
+    
     $username = mysqli_real_escape_string($link,$_POST['username']);
     $email = mysqli_real_escape_string($link,$_POST['email']);
-    $password = mysqli_real_escape_string($link,$password);
+    //$password = mysqli_real_escape_string($link,$password);
     
     
     //checking if the user had already registered
-    $sql = "select * from users where username='$username'";
-    $result = mysqli_query($link,$sql);
-    if($result) {
-        echo "<div class='alert alert-danger'>Username already registered</div>";
-        reset($username);
-    }
-    else {
-        $sql = "insert into users(username,password,email) values ('$username','$password','$email')";
-        $result = mysqli_query($link,$sql);
-    if($result) {
-        echo "<div class='alert alert-success'><strong>Sign Up Successful!!</strong></div>";
-    }
+   $sql = "select * from users where username = 'pankaj'";
+   $result = mysqli_query($link,$sql);
+   if(!$result) {
+       echo  "<div class='alert alert-danger'>Error in inserting the user details</div>";exit;
+   }
+   
+   
+   $results = mysqli_num_rows($result);
+   if(!$results) {
+       echo  "<div class='alert alert-danger'>Username is already registered!<br>Login to access</div>";exit;
+   }
+   
+   
+    
+   
+        //creating actvation key
         
-    }
+        /*$activationkey = bin2hex(openssl_random_pseudo_bytes(16));
+        $sql = "insert into users (name,email,password) values('$username','$email','$password')";
+        $result = mysqli_query($link,$sql);
+        if (!$result) {
+            echo "<div class='alert alert-danger'>Error in inserting the user details</div>";exit;
+        }
+        
+        $message = "Please click on this link to activate your account:\n\n"; 
+        $message.= "http://geeks.thecompletewebhosting.com/online-notes/activate.php?email=".urlencode($email)."&key=$activationkey";
+        
+        if(mail($email,'Confirm Your Registration',$message,'From:','onlinenotes@geeks.thecompletewebhosting.com'))
+        echo "<div class='alert alert-success'>Thank you for registering!<br>Please click on the activation link in your mail box  to activate your account</div>";
+        else echo 'mail not send';*/
+        
     
     
-}
+        
+    
+    
+    
+
 
 
 ?>
