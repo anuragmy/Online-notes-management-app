@@ -16,21 +16,23 @@ $confpassword = '<p><strong>Please confirm the password</strong></p>';
 
 //check fields submitted or not
 
-if(!isset($_POST['username']))
+if(empty($_POST['username']))
     $error.= $usernameerror;
 else
     $username = filter_var($_POST['username'],FILTER_SNITIZE_STRING);
     
     
-if(!isset($_POST['email']))
+if(empty($_POST['email']))
     $error.= $emailerror;
 else 
+    if(!(preg_match('/[.]/',$_POST['email'])))
+        $error.= $emilerror;
     $email = filter_var($_POST['email'],FILTER_VALIDATE_EMAIL);  
     
     
-if(!isset($_POST['passowrd']))
+if(empty($_POST['password']))
     $error.= $passworderror;
-elseif (strlen($_POST['password']) > 6 and preg_match('/[A-Z]/',$_POST['password']) and preg_match('/[0-9]/',$_POST['password']))
+elseif (!(strlen($_POST['password']) > 6 and preg_match('/[A-Z]/',$_POST['password']) and preg_match('/[0-9]/',$_POST['password'])))
     $error.= $missingpassword;
 else {
     $password = filter_var($_POST['password'],FILTER_SANITIZE_STRING);
@@ -47,8 +49,30 @@ if($error) {
     echo "<div class='alert alert-danger'>".$error."</div>";
 }
 elseif(!$error){
-    echo "<div class='alert alert-success'>Sign Up Successfull!!</div>";
+    //prepairing varibales for sql 
+    $username = mysqli_real_escape_string($link,$_POST['username']);
+    $email = mysqli_real_escape_string($link,$_POST['email']);
+    $password = mysqli_real_escape_string($link,$password);
+    
+    
+    //checking if the user had already registered
+    $sql = "select * from users where username='$username'";
+    $result = mysqli_query($link,$sql);
+    if($result) {
+        echo "<div class='alert alert-danger'>Username already registered</div>";
+        reset($username);
+    }
+    else {
+        $sql = "insert into users(username,password,email) values ('$username','$password','$email')";
+        $result = mysqli_query($link,$sql);
+    if($result) {
+        echo "<div class='alert alert-success'><strong>Sign Up Successful!!</strong></div>";
+    }
+        
+    }
+    
+    
 }
-reset($error);
+
 
 ?>
