@@ -41,7 +41,7 @@ else {
     elseif($_POST['confirm-password'] != $_POST['password'])
         $error.= $passwordconf;
     else 
-        $password = md5($_POST['password']);
+        $password = hash("sha256",$_POST['password']);
 }
 
 
@@ -58,7 +58,7 @@ if($error) {
     
     
     //checking if the user had already registered
-   $sql = "select * from users where username = 'pankaj'";
+   $sql = "select * from users where username = '$username'";
    $result = mysqli_query($link,$sql);
    if(!$result) {
        echo  "<div class='alert alert-danger'>Error in inserting the user details</div>";exit;
@@ -66,28 +66,31 @@ if($error) {
    
    
    $results = mysqli_num_rows($result);
-   if(!$results) {
+   if($results) {
        echo  "<div class='alert alert-danger'>Username is already registered!<br>Login to access</div>";exit;
    }
    
    
-    
+            
    
         //creating actvation key
         
-        /*$activationkey = bin2hex(openssl_random_pseudo_bytes(16));
-        $sql = "insert into users (name,email,password) values('$username','$email','$password')";
+        $activationkey = bin2hex(openssl_random_pseudo_bytes(16));
+        //inserting data to databse
+        
+        $sql = "insert into users (username,email,password,activation) values('$username','$email','$password','$activationkey')";
         $result = mysqli_query($link,$sql);
         if (!$result) {
-            echo "<div class='alert alert-danger'>Error in inserting the user details</div>";exit;
+            echo "<div class='alert alert-danger'>Error in inserting the user details:".mysqli_error($link)."</div>";exit;
         }
+        //else echo "<div class='alert alert-success'><strong> Database updated//</strong></div>";exit;
         
         $message = "Please click on this link to activate your account:\n\n"; 
         $message.= "http://geeks.thecompletewebhosting.com/online-notes/activate.php?email=".urlencode($email)."&key=$activationkey";
         
         if(mail($email,'Confirm Your Registration',$message,'From:','onlinenotes@geeks.thecompletewebhosting.com'))
         echo "<div class='alert alert-success'>Thank you for registering!<br>Please click on the activation link in your mail box  to activate your account</div>";
-        else echo 'mail not send';*/
+        else echo "<div class='alert alert-danger'>Mail not sent :( </div>";
         
     
     
